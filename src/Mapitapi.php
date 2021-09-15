@@ -82,7 +82,8 @@ class Mapitapi extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $event->rules['cpActionTrigger1'] = 'mapitapi/default/do-something';
+                // $event->rules['cpActionTrigger1'] = 'mapitapi/default/do-something';
+                $event->rules['mapitapi/default/map-it'] = ['template' => 'mapitapi/results'];
             }
         );
 
@@ -127,23 +128,5 @@ class Mapitapi extends Plugin
                 'settings' => $this->getSettings()
             ]
         );
-    }
-    public function getCpNavItem()
-    {
-        $parent = parent::getCpNavItem();
-    
-        // Allow user to override plugin name in sidebar
-     
-            $parent['label'] = "Mapit import";
-     
-        return $parent;
-        // return array_merge($parent,[
-        //     'subnav' => [
-        //         'sectionName' => [
-        //             'label' => Craft::t('your-plugin', 'Tab Name'),
-        //             'url'   => 'your-plugin/section-name'
-        //         ]
-        //     ]
-        // ]);
     }
 }

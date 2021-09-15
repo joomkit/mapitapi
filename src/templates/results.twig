@@ -1,0 +1,53 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * mapitapi plugin for Craft CMS 3.x
+ *
+ * mapitapi index.twig
+ *
+ * @author    Alan Sparkes
+ * @copyright Copyright (c) 2021 Alan Sparkes
+ * @link      https://www.joomkit.co.uk
+ * @package   Mapitapi
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("joomkit\\mapitapi\\assetbundles\\mapitapi\\MapitapiAsset") %}
+{% do view.registerAssetBundle("joomkit\\mapitapi\\assetbundles\\indexcpsection\\IndexCPSectionAsset") %}
+
+{% set docsUrl = "https://github.com/joomkit/mapitapi/blob/master/README.md" %}
+
+{% set title = "mapitapi" %}
+
+{% set pluginCpUrl = url('mapitapi') %}
+
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@joomkit/mapitapi/assetbundles/indexcpsection/dist', true) ~ '/img/Index-icon.svg' %}
+
+{% set extraPageHeaderHtml %}
+    <div class="buttons">
+        <a href="{{ pluginCpUrl }}" class="btn submit add icon">{{ "Click Me!"|t('mapitapi') }}</a>
+    </div>
+{% endset %}
+
+{# The content of the CP Section#}
+{% set content %}
+    <h2>{{ "Mapit API importer"|t('mapit-api2entry') }}</h2>
+    <img src="{{ iconUrl }}" height="64" width="64" />
+    <p class="textline">Fetch map data for grant applications and store it with the releveant open funding regions for use in maps</p>
+
+    <form method="post"  accept-charset="UTF-8">
+    {{ csrfInput() }}
+    
+    {# {{ actionInput('/actions/mapit-api2entry/default/map-it') }} #}
+    {# <input type="hidden" name="action" value="admin/actions/mapitapi/default/map-it"> #}
+
+    <input type="hidden" name="action" value="admin/actions/mapitapi/default/map-it">
+    
+    <button class="btn submit add icon" type="submit">Start import</button>
+</form>
+{% endset %}
+

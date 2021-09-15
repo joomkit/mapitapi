@@ -1,0 +1,49 @@
+{
+    "name": "joomkit/mapitapi",
+    "description": "does map stuff",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "mapitapi"
+    ],
+    "support": {
+        "docs": "https://github.com/joomkit/mapitapi/blob/master/README.md",
+        "issues": "https://github.com/joomkit/mapitapi/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alan Sparkes",
+            "homepage": "https://www.joomkit.co.uk"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0"
+    },
+    "require-dev": {
+      "craftcms/cms": "^3.2.0",
+      "codeception/codeception": "^3.0",
+      "vlucas/phpdotenv": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "joomkit\\mapitapi\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "mapitapi",
+        "handle": "mapitapi",
+        "developer": "Alan Sparkes",
+        "developerUrl": "https://www.joomkit.co.uk",
+        "documentationUrl": "https://github.com/joomkit/mapitapi/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/joomkit/mapitapi/master/CHANGELOG.md",
+        "components": {
+            "mapitapiService": "joomkit\\mapitapi\\services\\MapitapiService"
+        },
+        "class": "joomkit\\mapitapi\\Mapitapi"
+    }
+}
