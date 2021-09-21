@@ -10,6 +10,7 @@
 
 namespace joomkit\mapitapi;
 
+use joomkit\mapitapi\jobs\Importgeojson;
 use joomkit\mapitapi\services\MapitapiService as MapitapiServiceService;
 use joomkit\mapitapi\models\Settings;
 
@@ -69,6 +70,10 @@ class Mapitapi extends Plugin
     {
         parent::init();
         self::$plugin = $this;
+        $this->setComponents([
+            'Importgeojson' => Importgeojson::class, // job
+            'MapitapiService' => MapitapiService::class //service
+        ]);
 
         Event::on(
             UrlManager::class,

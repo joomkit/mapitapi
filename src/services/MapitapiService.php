@@ -10,6 +10,7 @@
 
 namespace joomkit\mapitapi\services;
 
+use joomkit\mapitapi\jobs\Importgeojson;
 use joomkit\mapitapi\Mapitapi;
 
 use Craft;
@@ -28,12 +29,25 @@ class MapitapiService extends Component
     /*
      * @return mixed
      */
-    public function exampleService()
+    public function doBackGroundJob()
     {
         $result = 'something';
-        // Check our Plugin's settings for `someAttribute`
-        if (Mapitapi::$plugin->getSettings()->someAttribute) {
-        }
+        $queue = Craft::$app->getQueue();
+        $jobId = $queue->push(new Importgeojson());
+        Craft::debug(
+            Craft::t(
+                'mapitapi',
+                'Started import geo json queue job id: {jobId}',
+                [
+                    'jobId' => $jobId,
+                ]
+            ),
+            __METHOD__
+        );
+//        var_dump($result);
+//        // Check our Plugin's settings for `someAttribute`
+//        if (Mapitapi::$plugin->getSettings()->someAttribute) {
+//        }
 
         return $result;
     }
