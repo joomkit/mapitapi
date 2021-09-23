@@ -31,6 +31,7 @@ class MapitapiService extends Component
      */
     public function doBackGroundJob()
     {
+
         $result = 'something';
         $queue = Craft::$app->getQueue();
         $jobId = $queue->push(new Importgeojson());

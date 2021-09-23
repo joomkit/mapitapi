@@ -22,6 +22,7 @@ use craft\db\QueryAbortedException;
 
 use craft\helpers\App;
 
+use GuzzleHttp;
 
 
 use yii\base\Exception;
@@ -70,60 +71,44 @@ class DefaultController extends Controller
     public function actionMapIt()
     {
 
-        // return $this->renderTemplate('results', $result);
-
-        $entries = Entry::find()
-        ->section('openFunding')
-        ->orderBy('lsoaname')
-        ->limit(null)
-        ->all();
-
-        $OLFentries = Entry::find()
-        ->section('mapitOlfData')
-        ->orderBy('title')
-        ->limit(3)
-        ->all();
-
         Mapitapi::$plugin->mapitapiService->doBackGroundJob();
-
-
-//            \craft\helpers\Queue::push(new importGeoJson(), 10);
-//        $variables = array( 'res' => $OLFentries[0]);
-        // return;
-        // $this->renderTemplate('mapitapi/results.twig', $variables);
-//         return $this->renderTemplate('mapit-api2entry/results', $variables);
-
-        // return $OLFentries[0];
-        // $q = (new \craft\db)
-        // $query = (new \craft\db\Query())
-        // ->select('openFunding')
-        // ->indexBy('lsoaname')
-        // ->ons($entry->lsoacode)
-        // ->all();
-
-        // Craft::$app->get_class_methods()
-        // importGeoJson::execute()
-
-
-        // return $query;
-        // $match = Entry::find()->title('E01013372')->section('mapitOlfData')->all();
-
-        // foreach ($entries as $entry) {
-
-        //     $match = Entry::find()->section('mapitOlfData')->ons($entry->lsoacode)->all();
-
-        //     // foreach ($match as $m){
-        //     foreach (\craft\helpers\Db::each($match) as $m) {
-        //         echo $entry->lsoacode. ":: has areaid:". $m->mapitAreaId. "<br>";
-        //     }
-        // }
-
-        // $res = "ran query";
-        // return $res;
-        // $data = craft\helpers\Json::decode($body);
-        // return $data;
-
+//        echo '<pre>';
+//        print_r($this->fetchGeoJson($areaId = '67794'));
+//        echo '</pre>';
     }
+
+//    public function fetchGeoJson($areaId)
+//    {
+//
+//        $mapAPIkey = "IJvGFcalAXdjcuqfoIIYiFoiVyXLGjjg6mKoHb0F";
+//
+//        $baseUri = 'https://mapit.mysociety.org';
+//
+//        $url = $baseUri . '/area/' . $areaId . '.geojson?api_key=' . $mapAPIkey;
+//
+////        $client = new \Guzzle\Http\Client();
+////        $request = $client->get($url);
+////        $data = $request->getBody();
+////        return $request;
+////        $url = "https://reqbin.com/echo/get/json";
+//
+//        $curl = curl_init($url);
+//        curl_setopt($curl, CURLOPT_URL, $url);
+//        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+//
+//        $headers = array(
+//            "Accept: application/json",
+//        );
+//        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+////for debug only!
+//        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+//        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+//
+//        $resp = curl_exec($curl);
+//        curl_close($curl);
+//        var_dump($resp);
+//
+//    }
 
     public function updateEntriesWithCustomInfo()
         {

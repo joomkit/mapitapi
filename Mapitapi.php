@@ -10,6 +10,7 @@
 
 namespace joomkit\mapitapi;
 
+use craft\log\FileTarget;
 use joomkit\mapitapi\services\MapitapiService as MapitapiServiceService;
 use joomkit\mapitapi\models\Settings;
 
@@ -19,6 +20,7 @@ use craft\services\Plugins;
 use craft\events\PluginEvent;
 use craft\web\UrlManager;
 use craft\events\RegisterUrlRulesEvent;
+use putyourlightson\logtofile\LogToFile;
 
 use yii\base\Event;
 
@@ -62,6 +64,9 @@ class Mapitapi extends Plugin
     // Public Methods
     // =========================================================================
 
+    public static function log($message){
+        Craft::getLogger()->log($message, \yii\log\Logger::LEVEL_INFO, 'mapitapi');
+    }
     /**
      * @inheritdoc
      */
@@ -69,6 +74,13 @@ class Mapitapi extends Plugin
     {
         parent::init();
         self::$plugin = $this;
+
+        $fileTarget = new FileTarget([
+            'logFile' => __DIR__. '/mapitapi.log', // <--- path of the log file
+            'categories' => ['mapitapi'] // <--- categories in the file
+        ]);
+        // include the new target file target to the dispatcher
+        Craft::getLogger()->dispatcher->targets[] = $fileTarget;
 
         Event::on(
             UrlManager::class,
@@ -131,11 +143,11 @@ class Mapitapi extends Plugin
     public function getCpNavItem()
     {
         $parent = parent::getCpNavItem();
-    
+
         // Allow user to override plugin name in sidebar
-     
+
             $parent['label'] = "Mapit import";
-     
+
         return $parent;
         // return array_merge($parent,[
         //     'subnav' => [
