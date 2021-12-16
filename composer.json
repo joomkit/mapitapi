@@ -33,17 +33,5 @@
         "psr-4": {
           "joomkit\\mapitapi\\": "src/"
         }
-    },
-    "extra": {
-        "name": "mapitapi",
-        "handle": "mapitapi",
-        "developer": "Alan Sparkes",
-        "developerUrl": "https://www.joomkit.co.uk",
-        "documentationUrl": "https://github.com/joomkit/mapitapi/blob/master/README.md",
-        "changelogUrl": "https://raw.githubusercontent.com/joomkit/mapitapi/master/CHANGELOG.md",
-        "components": {
-            "mapitapiService": "joomkit\\mapitapi\\services\\MapitapiService"
-        },
-        "class": "joomkit\\mapitapi\\Mapitapi"
     }
 }

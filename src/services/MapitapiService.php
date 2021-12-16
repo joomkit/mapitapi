@@ -10,6 +10,7 @@
 
 namespace joomkit\mapitapi\services;
 
+use craft\elements\Entry;
 use joomkit\mapitapi\jobs\Importgeojson;
 use joomkit\mapitapi\Mapitapi;
 
@@ -31,25 +32,53 @@ class MapitapiService extends Component
      */
     public function doBackGroundJob()
     {
-
-        $result = 'something';
+        $elementIds = Entry::find()
+            ->section('openFunding')
+            ->orderBy('id')
+            ->ids();
         $queue = Craft::$app->getQueue();
-        $jobId = $queue->push(new Importgeojson());
-        Craft::debug(
-            Craft::t(
-                'mapitapi',
-                'Started import geo json queue job id: {jobId}',
-                [
-                    'jobId' => $jobId,
-                ]
-            ),
-            __METHOD__
-        );
-//        var_dump($result);
-//        // Check our Plugin's settings for `someAttribute`
-//        if (Mapitapi::$plugin->getSettings()->someAttribute) {
-//        }
 
-        return $result;
+        foreach (array_chunk($elementIds, 100) as $ids) {
+            $jobId = $queue->push(new Importgeojson(['elementIds' => $ids]));
+            Craft::info(
+                Craft::t(
+                    'mapitapi',
+                    'Started import geo json queue job id: {jobId}',
+                    [
+                        'jobId' => $jobId,
+                    ]
+                ),
+                __METHOD__
+            );
+        }
+    }
+    public function delete()
+    {
+//        $elementIds = Craft::$app->db->createCommand()
+//            ->select('id')
+//            ->from('entries')
+//            ->where('sectionId = :sectionId', array(':sectionId' => 34))
+//            ->queryColumn();
+        $elementIds = Entry::find()
+            ->section('openFunding')
+            ->orderBy('id')
+            ->ids();
+        foreach ($elementIds as $id) {
+            $element = Entry::find()->anyStatus()->id($id)->one();
+            Craft::$app->getElements()->deleteElement($element);
+            Craft::info(
+                Craft::t(
+                    'mapitapi',
+                    'Deleted ' . $element->id. ': title '.$element->title ,
+                    [
+                        'Id' => $element->id,
+                        'Title' => $element->title,
+                    ]
+                ),
+                __METHOD__
+            );
+        }
+
+
     }
 }

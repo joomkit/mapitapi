@@ -34,22 +34,24 @@
 {% endset %}
 {% set tabs = {
     mapping: { label: "Mapping tools"|t, url: url('mapitapi') },
-    publishing: { label: "Publishing Settings"|t, url: url('mapitapi/tools') },
+    tools: { label: "Publishing Settings"|t, url: url('mapitapi/tools') },
 } %}
-{# The content of the CP Section#}
+{% set selectedTab = 'tools' %}
+{# The content of the CP Section #}
 {% set content %}
-    <h2>{{ "Results of  API importer" }}</h2>
-    <img src="{{ iconUrl }}" height="64" width="64" />
-    <p class="textline">Fetch map data for grant applications and store it with the releveant open funding regions for use in maps</p>
+    <h2>{{ "Manage current open funding" }}</h2>
+    <img src="{{ iconUrl }}" height="64" width="64"/>
+    <p class="textline">Use this to delete current open funding rounds before importing new ones.</p>
 
-    <form method="post"  accept-charset="UTF-8">
-    {{ csrfInput() }}
-    
-    {# {{ actionInput('/actions/mapit-api2entry/default/map-it') }} #}
-    {# <input type="hidden" name="action" value="admin/actions/mapitapi/default/map-it"> #}
-    {{ actionInput('mapitapi/default/map-it') }}
-   
-    <button class="btn submit add icon" type="submit">Start import</button>
-</form>
+    <form method="post" accept-charset="UTF-8">
+        {{ csrfInput() }}
+
+        {# {{ actionInput('/actions/mapit-api2entry/default/map-it') }} #}
+        {# <input type="hidden" name="action" value="admin/actions/mapitapi/default/map-it"> #}
+        {{ actionInput('mapitapi/default/delete') }}
+
+        <button class="btn submit minus icon" type="submit">Delete current funding</button>
+    </form>
+
 {% endset %}
 

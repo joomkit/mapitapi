@@ -77,57 +77,29 @@ class DefaultController extends Controller
 //        echo '</pre>';
     }
 
-//    public function fetchGeoJson($areaId)
-//    {
-//
-//        $mapAPIkey = "IJvGFcalAXdjcuqfoIIYiFoiVyXLGjjg6mKoHb0F";
-//
-//        $baseUri = 'https://mapit.mysociety.org';
-//
-//        $url = $baseUri . '/area/' . $areaId . '.geojson?api_key=' . $mapAPIkey;
-//
-////        $client = new \Guzzle\Http\Client();
-////        $request = $client->get($url);
-////        $data = $request->getBody();
-////        return $request;
-////        $url = "https://reqbin.com/echo/get/json";
-//
-//        $curl = curl_init($url);
-//        curl_setopt($curl, CURLOPT_URL, $url);
-//        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-//
-//        $headers = array(
-//            "Accept: application/json",
-//        );
-//        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-////for debug only!
-//        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-//        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-//
-//        $resp = curl_exec($curl);
-//        curl_close($curl);
-//        var_dump($resp);
-//
-//    }
+    public function actionDelete()
+    {
+
+       // Mapitapi::$plugin->mapitapiService->delete();
+        Mapitapi::$plugin->mapitapiService->delete();
+//        Mapitapi::getInstance()->deleteOpenFundingRoundsService->delete();
+
+    }
 
     public function updateEntriesWithCustomInfo()
         {
             /** @var craft\services\Elements $elementService */
-            $elementService = Craft::$app->elements;
-
-            // add conditions here
-
-
-
-            $entries = Entry::find()->limit(1500)->all();
-
-            foreach ($entries as $entry) {
-                // update your field
-                $entry->setFieldValue('my_custom_field', 'some_value');
-                $success = $elementService->saveElement($entry);
-                if (!$success) {
-                    // saving failed, log error or abort
-                }
-            }
+//            $elementService = Craft::$app->elements;
+//
+//            $entries = Entry::find()->limit(1500)->all();
+//
+//            foreach ($entries as $entry) {
+//                // update your field
+//                $entry->setFieldValue('my_custom_field', 'some_value');
+//                $success = $elementService->saveElement($entry);
+//                if (!$success) {
+//                    // saving failed, log error or abort
+//                }
+//            }
         }
 }

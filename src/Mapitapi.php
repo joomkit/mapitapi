@@ -21,6 +21,7 @@ use craft\events\PluginEvent;
 use craft\web\UrlManager;
 use craft\events\RegisterUrlRulesEvent;
 
+
 use yii\base\Event;
 
 /**
@@ -68,18 +69,20 @@ class Mapitapi extends Plugin
      */
     public function init()
     {
+
+
         parent::init();
         self::$plugin = $this;
         $this->setComponents([
             'Importgeojson' => Importgeojson::class, // job
-            'MapitapiService' => MapitapiService::class //service
+            'MapitapiService' => MapitapiService::class, //service
         ]);
 
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $event->rules['siteActionTrigger1'] = 'mapitapi/default';
+//                $event->rules['siteActionTrigger1'] = 'mapitapi/default';
             }
         );
 
@@ -89,6 +92,8 @@ class Mapitapi extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 // $event->rules['cpActionTrigger1'] = 'mapitapi/default/do-something';
                 $event->rules['mapitapi/default/map-it'] = ['template' => 'mapitapi/results'];
+                $event->rules['mapitapi/tools'] = ['template' => 'mapitapi/tools'];
+                $event->rules['mapitapi/default/delete'] = ['template' => 'mapitapi/delete'];
             }
         );
 

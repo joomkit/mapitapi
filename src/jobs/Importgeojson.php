@@ -26,7 +26,6 @@ use craft\elements\db\ElementQuery;
 use craft\helpers\App;
 use yii\base\Exception;
 
-use putyourlightson\logtofile\LogToFile;
 
 /**
  * @author    Alan Sparkes
@@ -43,6 +42,7 @@ class Importgeojson extends BaseJob
      */
     public $areaId;
     public $geoJson;
+    public $elementIds;
     private $mapAPIkey;
     // Public Methods
     // =========================================================================
@@ -52,63 +52,69 @@ class Importgeojson extends BaseJob
      */
     public function execute($queue)
     {
-
-
-        // Do work here
-        $query = Entry::find();
-        if (!empty($this->criteria)) {
-            Craft::configure($query, $this->criteria);
-        }
-        $query
-            ->section('openFunding')
-            ->orderBy('id')
-            ->limit(null)
-            ->all();
-
-        $totalElements = $query->count();
+        $elementIds = $this->elementIds ?? [];
+        $totalElements = count($elementIds);
         $currentElement = 0;
+        foreach ($elementIds as $id) {
+            $element = Entry::find()->anyStatus()->id($id)->one();
+            if (!$element) continue;
+            // process the current element …
+            try {
+                if (!$element->geojson) {
 
-        try {
-            foreach ($query->each() as $element) {
+                    $this->setProgress($queue, $currentElement++ / $totalElements);
+                    // mapitOLF data contains mysociety mapit source where we can get the area id from the lsoa in order to do api lookup and get the geojson - rate limited 10k per month one a second
+                    $match = Entry::find()->section('mapitOlfData')->ons($element->lsoacode)->one(); //one because we want one entry returned and lsoanames are unique
 
-                $this->setProgress($queue, $currentElement++ / $totalElements);
-                $match = Entry::find()->section('mapitOlfData')->ons($element->lsoacode)->one(); //one because we want one entry returned and lsoanames are unique
+                    // todo
+                    // expnad match function to check internal IMD data source for existing
 
-                if ($match) {
-                    // if we have a match then call the mapit api with the area id
-                    $geoData = $this->fetchGeoJson($match->mapitAreaId);
+                    if ($match) {
+                        // if we have a match then call the mapit api with the area id
+                        $geoData = $this->fetchGeoJson($match->mapitAreaId);
 
-                    $element->setFieldValue('mapitAreaId', $match->mapitAreaId);
-                    $element->setFieldValue('geojson', $geoData);
+                        $element->setFieldValue('mapitAreaId', $match->mapitAreaId);
+                        $element->setFieldValue('geojson', $geoData);
 
-                    if (!Craft::$app->getElements()->saveElement($element)) {
-                        Craft::error(
-                            ' || Couldnt save funding entry: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode,
-                            __METHOD__
-                        );
+                        if (!Craft::$app->getElements()->saveElement($element)) {
+                            Craft::error(
+                                ' || Couldnt save funding entry: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode,
+                                __METHOD__
+                            );
+                        } else {
+                            Craft::info(
+                                Craft::t(
+                                    'mapitapi',
+                                    'Sleeping for 1 secs ..saved funding entry: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode
+                                ),
+                                __METHOD__
+                            );
+                            sleep(1);
+                        }
                     }else{
-                        Craft::debug(
+                        Craft::info(
                             Craft::t(
                                 'mapitapi',
-                                'Sleeping for 2 secs ..saved funding entry: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode
+                                'Could not find lsoacode in OLF data: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode
                             ),
                             __METHOD__
                         );
-                        sleep(1);
                     }
+
                 }
 
-                //}
-            }
-        } catch (Exception $e) {
-            echo '[error]: '
-                . $e->getMessage()
-                . 'exception while processing '
-                . $currentElement . '/' . $totalElements
-                . ' - processing asset: ' . $element->title
-                . ' from field: ' . $element->lsoacode . PHP_EOL;
+            } catch (Exception $e) {
+                echo '[error]: '
+                    . $e->getMessage()
+                    . 'exception while processing '
+                    . $currentElement . '/' . $totalElements
+                    . ' - processing asset: ' . $element->title
+                    . ' from field: ' . $element->lsoacode . PHP_EOL;
 
+            }
         }
+
+
     }
 
 //    public function saveElements($element){
@@ -127,8 +133,8 @@ class Importgeojson extends BaseJob
     {
 
 
-        $mapAPIkey = "IJvGFcalAXdjcuqfoIIYiFoiVyXLGjjg6mKoHb0F";
-
+//        $mapAPIkey = "IJvGFcalAXdjcuqfoIIYiFoiVyXLGjjg6mKoHb0F"; // pht's 'GGIvcJdKOseHzXnZfNEiJEyDCtNptcpsEXyaVXKy'
+        $mapAPIkey = "GGIvcJdKOseHzXnZfNEiJEyDCtNptcpsEXyaVXKy";
         $baseUri = 'https://mapit.mysociety.org';
 
         $url = $baseUri . '/area/' . $areaId . '.geojson?api_key=' . $mapAPIkey;

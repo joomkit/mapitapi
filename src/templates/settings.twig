@@ -12,15 +12,24 @@
  * @since     1.0.0
  */
 #}
-
+{% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
 
-{% do view.registerAssetBundle("joomkit\\mapitapi\\assetbundles\\mapitapi\\MapitapiAsset") %}
 
+{% do view.registerAssetBundle("joomkit\\mapitapi\\assetbundles\\mapitapi\\MapitapiAsset") %}
+{% do view.registerAssetBundle("joomkit\\mapitapi\\assetbundles\\indexcpsection\\IndexCPSectionAsset") %}
+
+{% set docsUrl = "https://github.com/joomkit/mapitapi/blob/master/README.md" %}
+
+{% set title = "mapitapi" %}
+
+{% set pluginCpUrl = url('mapitapi') %}
+{% set content %}
 {{ forms.textField({
     label: 'Some Field',
     instructions: 'Enter some setting here.',
     id: 'someAttribute',
     name: 'someAttribute',
-    value: settings['someAttribute']})
+    value: 'ddd'})
 }}
+{% endset %}
