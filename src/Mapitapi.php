@@ -33,7 +33,7 @@ use yii\base\Event;
  *
  * @property  MapitapiServiceService $mapitapiService
  */
-class Mapitapi extends Plugin
+class Mapitapi extends \craft\base\Plugin
 {
     // Static Properties
     // =========================================================================
@@ -41,7 +41,7 @@ class Mapitapi extends Plugin
     /**
      * @var Mapitapi
      */
-    public static $plugin;
+    public static Mapitapi $plugin;
 
     // Public Properties
     // =========================================================================
@@ -49,17 +49,17 @@ class Mapitapi extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '1.0.0';
+    public string $schemaVersion = '1.0.0';
 
     /**
      * @var bool
      */
-    public $hasCpSettings = true;
+    public bool $hasCpSettings = true;
 
     /**
      * @var bool
      */
-    public $hasCpSection = true;
+    public bool $hasCpSection = true;
 
     // Public Methods
     // =========================================================================
@@ -75,6 +75,7 @@ class Mapitapi extends Plugin
         self::$plugin = $this;
         $this->setComponents([
             'Importgeojson' => Importgeojson::class, // job
+            'DeleteFundingData' => Importgeojson::class, // job
             'MapitapiService' => MapitapiService::class, //service
         ]);
 
@@ -106,6 +107,7 @@ class Mapitapi extends Plugin
             }
         );
 
+
         Craft::info(
             Craft::t(
                 'mapitapi',
@@ -119,15 +121,16 @@ class Mapitapi extends Plugin
     // Protected Methods
     // =========================================================================
 
-    /**
+    /*
      * @inheritdoc
      */
-    protected function createSettingsModel()
+
+    protected function createSettingsModel(): ? \joomkit\mapitapi\models\Settings
     {
         return new Settings();
     }
 
-    /**
+    /*
      * @inheritdoc
      */
     protected function settingsHtml(): string

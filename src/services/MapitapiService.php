@@ -12,6 +12,7 @@ namespace joomkit\mapitapi\services;
 
 use craft\elements\Entry;
 use joomkit\mapitapi\jobs\Importgeojson;
+use joomkit\mapitapi\jobs\DeleteFundingData;
 use joomkit\mapitapi\Mapitapi;
 
 use Craft;
@@ -34,16 +35,28 @@ class MapitapiService extends Component
     {
         $elementIds = Entry::find()
             ->section('openFunding')
-            ->orderBy('id')
+            ->orderBy('id asc')
             ->ids();
         $queue = Craft::$app->getQueue();
 
-        foreach (array_chunk($elementIds, 100) as $ids) {
-            $jobId = $queue->push(new Importgeojson(['elementIds' => $ids]));
+//        foreach ($elementIds as $id) {
+//            $element = Entry::find()->id($id)->one();
+//            echo $element->id;
+//            var_dump($element->geojson->value);
+////die();
+//            if (!$element->geojson->value) {
+//                echo "get json"; die();
+//            }
+//
+//        }
+//        die();
+        foreach (array_chunk($elementIds, 300) as $ids) {
+            $jobId = $queue->ttr(220)->push(new Importgeojson(['elementIds' => $ids]));
+
             Craft::info(
                 Craft::t(
                     'mapitapi',
-                    'Started import geo json queue job id: {jobId}',
+                    'Started import internal geojson queue job id: {jobId}',
                     [
                         'jobId' => $jobId,
                     ]
@@ -54,25 +67,22 @@ class MapitapiService extends Component
     }
     public function delete()
     {
-//        $elementIds = Craft::$app->db->createCommand()
-//            ->select('id')
-//            ->from('entries')
-//            ->where('sectionId = :sectionId', array(':sectionId' => 34))
-//            ->queryColumn();
+        // send to queue
+        $queue = Craft::$app->getQueue();
         $elementIds = Entry::find()
             ->section('openFunding')
             ->orderBy('id')
             ->ids();
-        foreach ($elementIds as $id) {
-            $element = Entry::find()->anyStatus()->id($id)->one();
-            Craft::$app->getElements()->deleteElement($element);
+        foreach (array_chunk($elementIds, 200) as $ids) {
+
+            $jobId = $queue->push(new DeleteFundingData(['elementIds' => $ids]));
+
             Craft::info(
                 Craft::t(
                     'mapitapi',
-                    'Deleted ' . $element->id. ': title '.$element->title ,
+                    'Deleted batch of open funding' ,
                     [
-                        'Id' => $element->id,
-                        'Title' => $element->title,
+                        'jobId' => $jobId
                     ]
                 ),
                 __METHOD__

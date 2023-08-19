@@ -41,8 +41,16 @@
 {% set content %}
     <h2>{{ "Manage current open funding" }}</h2>
     <img src="{{ iconUrl }}" height="64" width="64"/>
-    <p class="textline">Use this to delete current open funding rounds before importing new ones.</p>
-
+    <p class="textline">Use this to delete current open funding rounds before importing new ones. </p>
+    <h4>The process is like below</h4>
+    <ul>
+        <li>Turn off open funding from the entry single 'Apply'</li>
+        <li>Use this button to remove current open funding</li>
+        <li>Prepare your new data in correct format</li>
+        <li>Use feed me to import new data</li>
+        <li>Return to mapitapi mapping tools and clikc the button to get the geojson data for your open funding just imported</li>
+    </ul>
+<p>&nbsp</p>
     <form method="post" accept-charset="UTF-8">
         {{ csrfInput() }}
 

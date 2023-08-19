@@ -32,7 +32,7 @@ use yii\base\Exception;
  * @package   Mapitapi
  * @since     1.0.0
  */
-class Importgeojson extends BaseJob
+class Importgeojson extends \craft\queue\BaseJob
 {
     // Public Properties
     // =========================================================================
@@ -47,51 +47,50 @@ class Importgeojson extends BaseJob
     // Public Methods
     // =========================================================================
 
+
     /**
      * @inheritdoc
      */
-    public function execute($queue)
+    public function execute($queue) :void
     {
+
         $elementIds = $this->elementIds ?? [];
         $totalElements = count($elementIds);
         $currentElement = 0;
         foreach ($elementIds as $id) {
-            $element = Entry::find()->anyStatus()->id($id)->one();
-            if (!$element) continue;
+            $element = Entry::find()->id($id)->one();
+            //if (!$element) continue;
             // process the current element …
             try {
-                if (!$element->geojson) {
+                if (!$element->geojson->value) {
 
                     $this->setProgress($queue, $currentElement++ / $totalElements);
-                    // mapitOLF data contains mysociety mapit source where we can get the area id from the lsoa in order to do api lookup and get the geojson - rate limited 10k per month one a second
-                    $match = Entry::find()->section('mapitOlfData')->ons($element->lsoacode)->one(); //one because we want one entry returned and lsoanames are unique
 
-                    // todo
-                    // expnad match function to check internal IMD data source for existing
+                    $match = Entry::find()->section('imdData')->lsoacode($element->lsoacode)->one(); //one because we want one entry returned and lsoanames are unique
 
                     if ($match) {
-                        // if we have a match then call the mapit api with the area id
-                        $geoData = $this->fetchGeoJson($match->mapitAreaId);
 
-                        $element->setFieldValue('mapitAreaId', $match->mapitAreaId);
+                        $geoData = $match->geojson;
+                        $element->setFieldValue('mapitAreaId', $match->mapitAreaId); // probably redundant but will leave as reference for backtracking if areas change and we need to access mySociety for updates
                         $element->setFieldValue('geojson', $geoData);
 
                         if (!Craft::$app->getElements()->saveElement($element)) {
                             Craft::error(
-                                ' || Couldnt save funding entry: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode,
+                                'mapitapi || Couldnt save funding entry: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode,
                                 __METHOD__
                             );
-                        } else {
-                            Craft::info(
-                                Craft::t(
-                                    'mapitapi',
-                                    'Sleeping for 1 secs ..saved funding entry: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode
-                                ),
-                                __METHOD__
-                            );
-                            sleep(1);
                         }
-                    }else{
+                        Craft::info(
+                            Craft::t(
+                                'mapitapi',
+                                'Sleeping for 1 secs ..saved funding entry: ' . $element->id . ':' . $element->title . '| lsoa:' . $element->lsoacode . '| lsoa:' . $match->mapitAreaId
+                            ),
+                            __METHOD__
+                        );
+//                            // sleep 1 seconds as API implements 1 sec rate limit
+//                            sleep(1);
+
+                    } else {
                         Craft::info(
                             Craft::t(
                                 'mapitapi',
