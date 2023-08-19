@@ -45,7 +45,6 @@ class Mapitapi extends \craft\base\Plugin
 
     // Public Properties
     // =========================================================================
-
     /**
      * @var string
      */
